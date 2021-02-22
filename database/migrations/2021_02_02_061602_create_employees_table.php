@@ -24,6 +24,7 @@ class CreateEmployeesTable extends Migration
             $table->string('email');
             $table->string('password');
             $table->boolean('active_status');
+            $table->rememberToken();
             $table->timestamps();
         });
     }
