@@ -15,8 +15,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ProductsController;
 
 Route::get('/', function () {
-    if (Auth::check())
-        return View::make('welcome');
+    if(Auth::check()){
+        return redirect('home');
+    }
     return view('auth.login');
 });
 
