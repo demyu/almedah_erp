@@ -3,19 +3,32 @@
 namespace App\Http\Controllers;
 
 use App\Models\ItemGroup;
+use App\Models\ManufacturingMaterials;
 use App\Models\UnitOfMeasurement;
 use \App\Models\ManufacturingProducts;
 use \App\Models\ProductAttribute;
 use \App\Models\ProductVariantWithValue;
 use Illuminate\Http\Request;
 use DB;
+use PhpOption\None;
+use Exception;
 
 class ProductsController extends Controller
 {
     function index()
     {
         $man_products = ManufacturingProducts::get();
-        return view('modules.item', $man_products);
+        $item_groups = ItemGroup::all();
+        $raw_mats = ManufacturingMaterials::all();
+        $product_units = UnitOfMeasurement::all();
+        $product_variants = ProductAttribute::all();
+        return view('modules.item', [
+            "man_products"=>$man_products,
+            "item_groups"=>$item_groups,
+            "raw_mats"=>$raw_mats,
+            "product_units"=>$product_units,
+            "product_variants"=>$product_variants,
+        ]);
     }
 
     public function store(Request $request)
@@ -44,6 +57,7 @@ class ProductsController extends Controller
             $data->product_name = $form_data['product_name'];
             $data->product_status = $form_data['product_status'];
             $data->product_type = $form_data['product_type'];
+            $data->product_category = (isset($form_data['product_category'])) ? $form_data['product_category'] : null;
             $data->sales_price_wt = $form_data['sales_price_wt'];
             $data->unit = $form_data['unit'];
             $data->internal_description = $form_data['internal_description'];
@@ -85,10 +99,6 @@ class ProductsController extends Controller
                     $variants->save();
                 }
             }
-
-
-
-
 
             // if (isset($form_data['attribute_value_array'])) {
             //     foreach ($form_data['attribute_array'] as $attribute_value) {
@@ -142,7 +152,7 @@ class ProductsController extends Controller
 
 
             $data->save();
-
+            
             return response()->json([
                 'status' => 'success'
             ]);

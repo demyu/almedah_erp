@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRawMaterialsTable extends Migration
+class CreateRawMatsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class CreateRawMaterialsTable extends Migration
      */
     public function up()
     {
-        if (!Schema::hasTable('env_raw_materials')) {
-            Schema::create('env_raw_materials', function (Blueprint $table) {
+        if(!Schema::hasTable('env_raw_materials'))
+        {
+                Schema::create('env_raw_materials', function (Blueprint $table) {
                 $table->id();
                 $table->string('item_code');
                 $table->string('item_name');

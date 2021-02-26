@@ -15,9 +15,12 @@ class ManufacturingProducts extends Model
         'product_name',
         'product_status',
         'product_type',
+        'product_category',
         'sales_price_wt',
+        'picture',
         'unit',
         'internal_description',
-        'bar_code'
+        'bar_code',
+        'picture'
     ];
 }
