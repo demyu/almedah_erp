@@ -85,3 +85,8 @@ Route::get('/logout', 'Auth\LoginController@logout')->name('logout');
 Route::post('/createBOM', 'BOMController@store');
 Route::get('/search-product/{product_code}', 'BOMController@search_product');
 Route::get('/bom', 'BOMController@index');
+
+/*Debugging*/
+Route::get('/debug/{id}', 'TestController@index');
+Route::get('/debug', 'TestController@index');
+Route::post('/debug', 'TestController@post');

@@ -54,16 +54,16 @@ class ProductsController extends Controller
             $form_data = $request->input();
             $data = new ManufacturingProducts();
 
+            $data->bar_code = $form_data['bar_code'];
+            $data->internal_description = $form_data['internal_description'];
+            $data->materials = $form_data['materials'];
+            $data->picture = $imagePath;
+            $data->product_category = (isset($form_data['product_category'])) ? $form_data['product_category'] : null;
             $data->product_name = $form_data['product_name'];
             $data->product_status = $form_data['product_status'];
             $data->product_type = $form_data['product_type'];
-            $data->product_category = (isset($form_data['product_category'])) ? $form_data['product_category'] : null;
             $data->sales_price_wt = $form_data['sales_price_wt'];
             $data->unit = $form_data['unit'];
-            $data->internal_description = $form_data['internal_description'];
-            $data->bar_code = $form_data['bar_code'];
-            $data->picture = $imagePath;
-
 
             if ($form_data['product_status'] == "Template") {
                 $concat = substr($form_data['product_name'], 0, 3) . "-" . substr($form_data['product_type'], 0, 3);
@@ -116,7 +116,7 @@ class ProductsController extends Controller
 
 
             return response()->json([
-                'status' => 'success'
+                'status' => 'success',
             ]);
         } catch (Exception $e) {
             return response()->json([

@@ -5,6 +5,9 @@
     function resetProductForm(){
         $('#product_name').val(null);
         $('#internal_description').val(null);
+        // Making the image field required again in case it was set as not required
+        // for whatever reason (such as making the create form an update form)
+        $('#picture').attr('required','required');
         $('#product_type').val(null);
         $('#product_type').selectpicker('refresh');
         $('#unit').val(null);
@@ -35,6 +38,28 @@
         $('#material-badge-qty-'+id).html(amount);
         $('#material-badge-name-'+id).html(name);
         
+    }
+    // Function that takes a product as a JSON as a parameter
+    // Mostly just filling up the form
+    function editProduct(product){
+        console.log(product['id']);
+        $('#bar_code').val(product['bar_code']); 
+        $('#create-product-form').modal('show');
+        $('#img_tmp').attr('src', 'storage/'+product['picture']);
+        $('#item_code').show();
+        // Picture field isn't required; an empty picture will
+        // retain the old picture of a product
+        $('#picture').attr('required', false);
+        $('#product_code').val(product['product_code']);
+        $('#product_name').val(product['product_name']);
+        $('.selectpicker').selectpicker('val', product['product_type']);
+        $('#sales_price_wt').val(product['sales_price_wt']);
+        $('.selectpicker1').selectpicker('val', product['unit']);
+        $('#internal_description').val(product['internal_description']);
+        $('#product-form').attr('action', 'update-product/'+product['id']);
+        $('#productFormLabel').html('Edit Item');
+        get_attribute(product['id']);
+        $('#product_status').val(product['product_status']);
     }
     function deleteProduct(id) {
         if (confirm("Are you sure?")) {
@@ -137,18 +162,17 @@
                                 {{ $product->unit }}
                             </td>
                             <td class="text-black-50 text-center"><a href='#' onclick="$('#image-view').attr('src', 'storage/<?= $product->picture ?>')" data-toggle="modal" data-target="#exampleImage">View</a></td>
-                            <td class="">
-                                <ul class="list-inline text-center">
-                                    <li class="list-inline-item">
-                                        <button data-toggle="modal" data-target="#create-product-form" class="btn btn-success btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" onclick="$('#item_code').show();$('#product_code').val('<?= $product->product_code ?>'); $('#product_name').val('<?= $product->product_name ?>'); $('.selectpicker').selectpicker('val', '<?= $product->product_type ?>'); $('#img_tmp').attr('src', 'storage/<?= $product->picture ?>'); $('#bar_code').val('<?= $product->bar_code ?>'); $('#sales_price_wt').val('<?= $product->sales_price_wt ?>'); $('.selectpicker1').selectpicker('val', '<?= $product->unit ?>'); $('#internal_description').val('<?= $product->internal_description ?>'); $('#product-form').attr('action', 'update-product/<?= $product->id ?>'); $('#productFormLabel').html('Edit Item'); get_attribute(<?= $product->id ?>); $('#product_status').val('<?= $product->product_status ?>');"><i class="fa fa-edit"></i></button>
-                                    </li>
-                                    <li class="list-inline-item">
-                                        <button onclick="deleteProduct(<?= $product->id ?>)" class="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"><i class="fa fa-trash"></i></button>
-                                    </li>
-                                    <li class="list-inline-item">
-                                        <button data-toggle="modal" data-target="#create-product-form" onclick="$('#item_code').show();$('#product_code').val('<?= $product->product_code ?>'); $('.selectpicker').selectpicker('val', '<?= $product->product_type ?>'); $('#productFormLabel').html('Add Variant for item (<b><?= $product->product_code ?></b>)'); $('.selectpicker1').selectpicker('val', '<?= $product->unit ?>'); $('#internal_description').val('<?= $product->internal_description ?>'); $('#product_status').val('Variant'); get_attribute(<?= $product->id ?>)" class="btn btn-secondary btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Add Variant"><i class="fa fa-plus-circle"></i></button>
-                                    </li>
-                                </ul>
+                            <td class="align-middle">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" data-toggle="dropdown">
+                                        Actions
+                                    </button>
+                                    <ul class="align-content-center dropdown-menu p-0" style="min-width:125px;" role="menu">
+                                        <li><button onclick="addStock({{ $product->id }})" style="width:100%" class="btn btn-success"><i class="fas fa-plus"></i> Add Stock</button></li>
+                                        <li><button onclick="editProduct({{ json_encode($product) }})" style="width:100%" class="btn btn-warning"><i class="fas fa-edit"></i> Edit</button></li>
+                                        <li><button onclick="deleteProduct({{ $product->id }})" style="width:100%" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</button></li>
+                                    </ul>
+                                </div>
                             </td>
                         </tr>
                     @endforeach
@@ -318,7 +342,7 @@
                         <div class="form-group p-2">
                             <label for="">Image</label>
                             <img id="img_tmp" src="../images/thumbnail.png" style="width:100%;">
-                            <input class="form-control" type="file" name="picture" onchange="readURL1(this);" required>
+                            <input class="form-control" type="file" id="picture" name="picture" onchange="readURL1(this);" required>
                         </div>
 
                         <script>
@@ -442,7 +466,7 @@
                                             alert("Value exists!");
                                         } else {
                                             if ($('#raw_' + this.value).val() > 0) {
-                                                $('#materials_div').append('<div class="col-sm material-badge" id="material-badge-'+this.value+'"><label class="badge badge-success m-1 p-2"><span id="material-badge-name-'+this.value+'">' + $('#materials option:selected').html() + '</span> (<span id="material-badge-qty-'+ this.value + '">' + $('#raw_' + this.value).val() + '</span> Stocks Available)</label><input type="text" class="form-control" placeholder="Qty."></div>');
+                                                $('#materials_div').append('<div class="col-sm material-badge" id="material-badge-'+this.value+'"><label class="badge badge-success m-1 p-2"><span id="material-badge-name-'+this.value+'">' + $('#materials option:selected').html() + '</span> (<span id="material-badge-qty-'+ this.value + '">' + $('#raw_' + this.value).val() + '</span> Stocks Available)</label><input type="number" min="0" name="materials_qty[]" class="form-control" placeholder="Qty."></div>');
                                             } else {
                                                 $('#materials_div').append('<div class="col-sm material-badge" id="material-badge-'+this.value+'"><label style="cursor: pointer;" onclick="$(`#create-product-form`).hide(); $(`body`).removeClass(`modal-open`); $(`.modal-backdrop`).remove(); $(`#divMain`).load(`/inventory`);" class="badge badge-danger m-1 p-2">' + $('#materials option:selected').html() + ' (' + $('#raw_' + this.value).val() + ' Stocks Left)</label></div>');
                                             }
@@ -471,6 +495,7 @@
 <script>
     //GET ATTRIBUTE
     function get_attribute(id) {
+        $('#attributes_div').html('');
         $('#attribute_group').hide();
         $.ajaxSetup({
             headers: {
@@ -785,6 +810,10 @@
         $('.modal:visible').length && $(document.body).addClass('modal-open');
     });
     $(document).ready(function(e) {
+        // Prevent form from closing
+        $('body').click(function(target){
+            console.log(target.target);
+        })
         $(".modal-backdrop").remove();
         /*Insert Record AJAX*/
         $('#product-form').on('submit', (function(e) {
@@ -794,6 +823,16 @@
                 }
             });
             var formData = new FormData($('#product-form')[0]);
+            materials_qty = document.getElementsByName('materials_qty[]');
+            var materials = {};
+            for(var i=0; i<materialList.length; i++){
+                materials[i] = {
+                    "material_id" : materialList[i],
+                    "material_qty" : materials_qty[i].value,
+                }
+            }
+            console.log(materials);
+            formData.set('materials', JSON.stringify(materials));
             $.ajax({
                 type: 'POST',
                 url: $('#product-form').attr('action'),
@@ -808,6 +847,7 @@
                         $(document).ready(function() {
                             sessionStorage.setItem("status", "success");
                             $('#divMain').load('/item');
+                            console.log(data['materials']);
                         });
                     } else {
                         console.log("error");

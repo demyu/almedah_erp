@@ -1,4 +1,4 @@
-<div class="container mt-3 rounded">
+<div class="container rounded">
     <div class="row d-flex justify-content-center">
 
         <div class="col-sm p-4 bg-light">
