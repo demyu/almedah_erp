@@ -90,3 +90,6 @@ Route::get('/bom', 'BOMController@index');
 Route::get('/debug/{id}', 'TestController@index');
 Route::get('/debug', 'TestController@index');
 Route::post('/debug', 'TestController@post');
+
+// ABC Analysis Currently at sales menu due to bug
+Route::get('/sales', 'RawMaterials2Controller@index');
